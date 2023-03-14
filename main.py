@@ -1,13 +1,16 @@
 from flask import Flask, render_template, redirect, request, make_response, session, jsonify
 from flask_login import LoginManager, login_user
+from flask_restful import Api
 
-from data import db_session, news_api
+from data import db_session, news_api, news_resources
 from data.news import News
 from data.users import User
 from forms.LoginForm import LoginForm
 from forms.user import RegisterForm
 
 app = Flask(__name__)
+api = Api(app)
+
 app.config['SECRET_KEY'] = 'fjkFOEKFMOKMFIO3FMKLMkelfmOIJR3FMFKNFOU2IN3PIFNOI232F'
 
 login_manager = LoginManager()
@@ -103,7 +106,9 @@ def bad_request(_):
 
 def main():
     db_session.global_init("db/blogs.db")
-    app.register_blueprint(news_api.blueprint)
+    # app.register_blueprint(news_api.blueprint)
+    api.add_resource(news_resources.NewsListResource, '/api/v2/news')
+    api.add_resource(news_resources.NewsResource, '/api/v2/news/<int:news_id>')
     app.run(debug=True, port=5001)
 
 
